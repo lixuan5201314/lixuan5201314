@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TXT 文件分割工具</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f0f0f0;
+        }
+        .container {
+            text-align: center;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 80%;
+            max-width: 600px;
+        }
+        #output {
+            margin-top: 20px;
+            white-space: pre-wrap;
+            border: 1px solid #ccc;
+            padding: 10px;
+            height: 300px;
+            overflow-y: auto;
+            background-color: #f9f9f9;
+        }
+        #downloadButtons {
+            margin-top: 20px;
+        }
+        button {
+            margin: 5px;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        input[type="file"], input[type="number"] {
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>TXT 文件分割工具</h1>
+        <label for="fileInput">选择一个 TXT 文件：</label>
+        <input type="file" id="fileInput" accept=".txt">
+        <br><br>
+
+        <label for="parts">分割成多少部分：</label>
+        <input type="number" id="parts" value="3" min="1">
+        <br><br>
+        <button onclick="splitFile()">分割文件</button>
+
+        <div id="output"></div>
+        <div id="downloadButtons"></div>
+    </div>
+
+    <script>
+        function splitFile() {
+            const fileInput = document.getElementById('fileInput');
+            const partsInput = document.getElementById('parts');
+            const output = document.getElementById('output');
+            const downloadButtons = document.getElementById('downloadButtons');
+            
+            if (!fileInput.files[0]) {
+                alert("请选择一个文件。");
+                return;
+            }
+
+            const file = fileInput.files[0];
+            const parts = parseInt(partsInput.value, 10);
+            
+            if (isNaN(parts) || parts < 1) {
+                alert("请输入有效的分割数量。");
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const fileContent = e.target.result;
+                const lines = fileContent.split('\n');
+                const totalLines = lines.length;
+                const linesPerPart = Math.ceil(totalLines / parts);
+                
+                let resultText = '';
+                let splitFiles = [];
+
+                // 分割文件内容
+                for (let i = 0; i < parts; i++) {
+                    const start = i * linesPerPart;
+                    const end = Math.min((i + 1) * linesPerPart, totalLines);
+                    resultText += `=== 第 ${i + 1} 部分 ===\n`;
+                    let partContent = '';
+                    for (let j = start; j < end; j++) {
+                        partContent += lines[j] + "\n";
+                    }
+                    splitFiles.push(partContent);
+                    resultText += partContent + "\n";
+                }
+                
+                // 显示分割后的内容
+                output.textContent = resultText;
+
+                // 清除之前的下载按钮
+                downloadButtons.innerHTML = '';
+
+                // 获取原文件名（不带扩展名）
+                const fileName = file.name.replace('.txt', '');
+
+                // 为每一部分创建下载按钮
+                splitFiles.forEach((partContent, index) => {
+                    const blob = new Blob([partContent], { type: 'text/plain' });
+                    const link = document.createElement('a');
+                    link.href = URL.createObjectURL(blob);
+                    // 设置下载文件的名字：原文件名_1.txt，原文件名_2.txt
+                    link.download = `${fileName}_${index + 1}.txt`;
+                    link.textContent = `下载 第 ${index + 1} 部分`;
+                    const button = document.createElement('button');
+                    button.appendChild(link);
+                    downloadButtons.appendChild(button);
+                    downloadButtons.appendChild(document.createElement('br'));
+                });
+            };
+
+            reader.onerror = function() {
+                alert("读取文件时发生错误。");
+            };
+
+            reader.readAsText(file);
+        }
+    </script>
+</body>
+</html>
