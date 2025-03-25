@@ -3,235 +3,300 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TXT文本分割工具 - 版本 1.3</title>
+    <title>TXT文本分割工具 - 版本 2.0 🐾</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            margin-top: 100px; /* 整体向下移动 */
-            background-color: #f4f4f4;
-            color: #000; /* 默认字体颜色 */
-        }
-        h1 {
-            color: inherit; /* 继承 body 的颜色 */
-        }
-        input[type="file"], button {
-            padding: 12px 20px;
-            font-size: 16px;
-            margin: 10px;
-            cursor: pointer;
-            border: 2px solid #4CAF50;
-            border-radius: 5px;
-            background-color: #4CAF50;
-            color: white;
-        }
-        button:hover, input[type="file"]:hover {
-            background-color: #45a049;
-        }
-        .file-list {
-            margin-top: 20px;
-        }
-        .file-list a {
-            color: #4CAF50;
-            text-decoration: none;
-            font-size: 18px;
-            display: block;
-            margin: 5px;
-        }
-        .file-list a:hover {
-            text-decoration: underline;
-        }
-        #footer {
-            text-align: center;
-            margin-top: 50px;
-            font-size: 14px;
-        }
-        #footer a {
-            color: #000; /* 设置链接为黑色 */
-            text-decoration: none;
-        }
-        #footer a:hover {
-            text-decoration: underline;
-        }
-        #footer span {
-            font-weight: bold; /* lixuan5201314 加粗显示 */
-        }
-        #disclaimer-modal {
-            display: none;
+        /* 背景设置 */
+        body::before {
+            content: "";
             position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: #fff;
-            padding: 20px;
-            border: 1px solid #ccc;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            z-index: 1000;
-            max-width: 90%;
-            max-height: 80%;
-            overflow-y: auto;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: var(--bg-image, none);
+            background-size: cover;
+            background-position: center;
+            filter: none;
+            opacity: 1.9;
+            z-index: -2;
+            transition: all 0.5s ease;
         }
-        #overlay {
-            display: none;
+
+        /* 修复黑色块问题，确保 WebGL 覆盖全屏 */
+        html, body {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            overflow-y: auto; /* 确保页面可以滚动 */
+        }
+
+        /* WebGL 画布（雨滴效果） */
+        canvas {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 999;
+            pointer-events: none;
+            z-index: -1;
         }
-        #close-btn {
-            display: block;
-            text-align: right;
+
+        /* 主要 UI 设计 */
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            min-height: 100vh;
+            margin: 0;
+            color: #333;
+            background-color: rgba(244, 244, 244, 0.8); /* 背景透明度 */
+            transition: all 0.3s ease;
+        }
+
+        .main-container {
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 30px;
+            background-color: rgba(255, 255, 255, 0.8); /* 设置透明度 */
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            opacity: 0.69; /* 设置透明度 */
+        }
+
+        h1 {
+            color: #FF69B4;
+            margin-bottom: 30px;
+            font-family: "Comic Sans MS", sans-serif;
+            text-shadow: 2px 2px 5px rgba(255, 182, 193, 0.69);
+        }
+
+        /* 按钮样式 */
+        button {
+            padding: 12px 24px;
+            font-size: 16px;
+            margin: 10px;
             cursor: pointer;
-            color: #f00;
+            border: none;
+            border-radius: 5px;
+            transition: all 0.2s;
+            background-color: #FF69B4;
+            color: white;
+            font-weight: bold;
+            box-shadow: 0 4px 10px rgba(255, 182, 193, 0.6);
         }
-        .color-switcher {
+
+        button:hover {
+            background-color: #FF1493;
+            transform: translateY(-2px);
+        }
+
+        button:active {
+            background-color: #FF3385;
+            transform: translateY(2px);
+        }
+
+        /* 猫咪按钮样式 */
+        .cat-button {
+            background-color: #FFB6C1;
+            color: #800080;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 16px;
+            margin: 10px;
+            cursor: pointer;
+            border: none;
+        }
+
+        .cat-button:hover {
+            background-color: #FF69B4;
+        }
+
+        /* 适应猫咪表情 */
+        .cat-icon {
+            font-size: 20px;
+            margin-right: 8px;
+        }
+
+        /* 选择框样式 */
+        select {
+            font-size: 16px;
+            padding: 8px;
+            margin: 15px 0;
+            border-radius: 5px;
+            background-color: #FFB6C1;
+            border: none;
+            color: #800080;
+        }
+
+        select:hover {
+            background-color: #FF69B4;
+        }
+
+        /* 文件列表容器样式 */
+        .file-list {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
             margin-top: 20px;
+        }
+
+        /* 每个下载链接的样式 */
+        .file-list a {
+            display: block;
+            width: 80%; /* 设定下载链接宽度，避免超出容器 */
+            margin: 10px 0;
+            text-align: center;
+            transition: transform 0.2s ease;
+        }
+
+        /* 增加动画效果 */
+        .file-list a:hover {
+            transform: scale(1.1);
+        }
+
+        /* 夜间模式 */
+        body.night-mode {
+            color: #eee;
+            background-color: rgba(34, 34, 34, 0.7);
+        }
+
+        body.night-mode .main-container {
+            background-color: rgba(51, 51, 51, 0.9);
+            color: #eee;
         }
     </style>
 </head>
 <body>
+    <canvas id="rainCanvas"></canvas> <!-- WebGL 雨滴效果 -->
 
-    <h1>TXT文本分割工具 - 版本 1.3</h1>
-    <input type="file" id="fileInput" accept=".txt">
-    <button onclick="splitFile()">分割文件</button>
+    <div class="main-container">
+        <h1>TXT文本分割工具 - 版本 2.0 🐾</h1>
 
-    <div class="file-list" id="fileList"></div>
+        <div class="input-group">
+            <input type="file" id="fileInput" accept=".txt">
+            <button id="splitBtn">分割文件 🐱</button>
+        </div>
 
-    <!-- 颜色切换按钮 -->
-    <div class="color-switcher">
-        <button onclick="switchColorScheme('day')">白天模式</button>
-        <button onclick="switchColorScheme('night')">夜晚模式</button>
-    </div>
+        <div class="file-list" id="fileList"></div>
 
-    <!-- 底部免责声明链接 -->
-    <div id="footer">
-        <a href="#" onclick="showDisclaimer()">点击查看免责声明</a>
-        - <span>lixuan5201314</span>
-    </div>
-
-    <!-- 模态框 -->
-    <div id="overlay"></div>
-    <div id="disclaimer-modal">
-        <span id="close-btn" onclick="closeDisclaimer()">关闭</span>
-        <h2>使用政策 - TXT文件分割工具</h2>
-        <p>使用政策 - TXT文件分割工具
-
-1. 简介
-本工具（以下简称“TXT文件分割工具”）旨在帮助用户方便、快速地将TXT格式的文本文件分割为多个部分。用户可根据需要，指定将文件分割成几部分，并下载分割后的文件。此工具仅供个人及非商业用途使用。
-
-2. 用户责任
-- 用户同意仅使用TXT文件分割工具处理合法且符合道德规范的内容。
-- 用户需对上传的文件内容负责，并确保所上传的文件不含有侵权、非法、恶意或有害信息。
-- 本工具仅作为文本文件分割用途，禁止用于任何违反相关法律法规的活动。
-
-3. 隐私与数据保护
-- TXT文件分割工具不会收集用户的个人信息或文件内容。所有文件数据均由用户自己控制和管理。
-- 上传的文件仅用于在本地设备进行处理，所有文件分割操作仅在本地进行，不会传输至远程服务器。
-
-4. 版权声明
-- 本工具的所有源代码、界面设计和功能均为原创，版权归开发者所有。
-- 用户可自由使用本工具进行文本文件分割，但不得将本工具的代码用于任何形式的商业再分发或改编，除非另行约定。
-
-5. 禁止行为
-- 不得将工具用于批量处理侵犯他人版权或涉及敏感、非法内容的文件。
-- 不得修改、反编译、解构或以其他形式篡改本工具的功能或源代码。
-- 本工具不可用于生成、传播或存储恶意软件、病毒或任何其他会对计算机系统造成伤害的内容。
-
-6. 免责声明
-- 本工具仅提供文本文件分割功能，开发者不对用户使用本工具后产生的任何损失、数据丢失、系统故障或其他任何间接、直接或意外损害承担责任。
-- 本工具不保证其在所有设备上都能完美运行。开发者有权根据需要对工具进行更新和维护，但不保证随时能解决所有技术问题。
-
-7. 支持与反馈
-- 本工具提供有限的支持，用户可通过工具的联系信息进行问题反馈或功能建议。
-- 用户若遇到问题，建议查阅工具的帮助文档或与开发者联系。
-
-8. 修改与更新
-- 本使用政策可能会根据需要进行调整或更新。更新后的政策将及时发布，生效日期为发布当日。用户继续使用本工具即视为同意更新后的使用政策。
-
-9. 法律适用
-- 本使用政策适用所在国家和地区的相关法律。任何因本工具产生的争议，应提交至开发者所在地的法院进行解决。
-
-10. 联系方式
-- 如有任何疑问或反馈，请通过工具内提供的联系方式与开发者取得联系。
-
-感谢您使用TXT文件分割工具，祝您使用愉快！</p>
+        <!-- 壁纸选择框 -->
+        <div>
+            <label for="wallpaperSelect"> 🐱:</label>
+            <select id="wallpaperSelect">
+                <option value="ecy">二次元壁纸</option>
+                <option value="clysj">从零开始壁纸</option>
+                <option value="mn">猫娘壁纸</option>
+                <option value="ys">原神壁纸</option>
+            </select>
+        </div>
+        
+        <br><br>
+        <button class="cat-button" onclick="toggleNightMode()">切换主题 🌙</button>
     </div>
 
     <script>
-        function splitFile() {
-            var fileInput = document.getElementById("fileInput");
-            if (fileInput.files.length === 0) {
-                alert("请先选择一个文件！");
+        function setBackground() {
+            let category = localStorage.getItem('wallpaperCategory') || 'mn';
+            let imgUrl = `https://api.lxtu.cn/api.php?category=${category}&t=${Date.now()}`;
+            document.body.style.setProperty('--bg-image', `url('${imgUrl}')`);
+        }
+
+        // 监听选择框变化
+        document.getElementById("wallpaperSelect").addEventListener("change", function() {
+            let category = this.value;
+            localStorage.setItem('wallpaperCategory', category);
+            setBackground();
+        });
+
+        function toggleNightMode() {
+            document.body.classList.toggle("night-mode");
+            localStorage.setItem('nightMode', document.body.classList.contains("night-mode") ? 'enabled' : 'disabled');
+        }
+
+        function initSettings() {
+            if (localStorage.getItem('nightMode') === 'enabled') {
+                document.body.classList.add("night-mode");
+            }
+            setBackground();
+        }
+
+        initSettings();
+
+        document.getElementById("splitBtn").addEventListener("click", function() {
+            const fileInput = document.getElementById("fileInput");
+            if (!fileInput.files.length) {
+                alert("喵~ 请先选择一个文件哦！");
                 return;
             }
 
-            var file = fileInput.files[0];
-            var reader = new FileReader();
-            
-            reader.onload = function(e) {
-                var content = e.target.result;
-                var numChunks = prompt("请输入分割文件的数量:", "2");
-                if (numChunks && !isNaN(numChunks) && numChunks > 0) {
-                    var chunkSize = Math.ceil(content.length / numChunks);
-                    var chunks = [];
-                    for (var i = 0; i < numChunks; i++) {
-                        chunks.push(content.substring(i * chunkSize, (i + 1) * chunkSize));
-                    }
-                    alert("文件已分割！");
+            const file = fileInput.files[0];
+            const reader = new FileReader();
 
-                    // 创建下载链接
-                    var fileList = document.getElementById("fileList");
+            reader.onload = function(e) {
+                const content = e.target.result;
+                const numChunks = prompt("请输入分割数量（2-10）喵~:", "2");
+
+                if (numChunks && numChunks >= 2 && numChunks <= 10) {
+                    const chunkSize = Math.ceil(content.length / numChunks);
+                    const fileList = document.getElementById("fileList");
                     fileList.innerHTML = ''; // 清空之前的文件列表
-                    for (var i = 0; i < chunks.length; i++) {
-                        var link = document.createElement("a");
-                        var blob = new Blob([chunks[i]], {type: "text/plain"});
-                        var url = URL.createObjectURL(blob);
-                        link.href = url;
-                        link.download = file.name.replace(".txt", "_" + (i + 1) + ".txt");
-                        link.textContent = "下载分割文件 " + (i + 1);
+
+                    for (let i = 0; i < numChunks; i++) {
+                        const chunk = content.substring(i * chunkSize, (i + 1) * chunkSize);
+                        const link = document.createElement("a");
+                        const blob = new Blob([chunk], { type: "text/plain" });
+
+                        link.href = URL.createObjectURL(blob);
+                        link.download = file.name.replace(".txt", `_part${i + 1}.txt`);
+                        link.textContent = `喵~ 下载第 ${i + 1} 部分 🐾`;
+                        link.classList.add("cat-button");  // 使用猫咪样式
                         fileList.appendChild(link);
                     }
                 } else {
-                    alert("请输入有效的分割数！");
+                    alert("请输入2-10之间的有效数字喵~！");
                 }
             };
 
             reader.readAsText(file);
-        }
-
-        // 颜色切换功能
-        function switchColorScheme(mode) {
-            if (mode === 'day') {
-                document.body.style.backgroundColor = '#f4f4f4';
-                document.body.style.color = '#000';
-            } else if (mode === 'night') {
-                document.body.style.backgroundColor = '#333';
-                document.body.style.color = '#fff';
-            }
-        }
-
-        // 文件选择器监听
-        document.getElementById("fileInput").addEventListener("change", function(event) {
-            var file = event.target.files[0];
-            if (file) {
-                alert("选择了文件: " + file.name);
-            }
         });
 
-        // 显示和关闭免责声明模态框
-        function showDisclaimer() {
-            document.getElementById('overlay').style.display = 'block';
-            document.getElementById('disclaimer-modal').style.display = 'block';
+        // **终极版雨滴效果**
+        function startRainEffect() {
+            const canvas = document.getElementById("rainCanvas");
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+
+            const ctx = canvas.getContext("2d");
+            let drops = [];
+
+            for (let i = 0; i < 100; i++) {
+                drops.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height,
+                    speed: Math.random() * 2 + 1
+                });
+            }
+
+            function drawRain() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = "rgba(255, 255, 255, 0.2)";
+                drops.forEach(drop => {
+                    ctx.beginPath();
+                    ctx.arc(drop.x, drop.y, 2, 0, Math.PI * 2);
+                    ctx.fill();
+                    drop.y += drop.speed;
+                    if (drop.y > canvas.height) {
+                        drop.y = 0;
+                    }
+                });
+
+                requestAnimationFrame(drawRain);
+            }
+
+            drawRain();
         }
 
-        function closeDisclaimer() {
-            document.getElementById('overlay').style.display = 'none';
-            document.getElementById('disclaimer-modal').style.display = 'none';
-        }
+        startRainEffect();
     </script>
-
 </body>
 </html>
