@@ -69,7 +69,19 @@
             font-family: "Comic Sans MS", sans-serif;
             text-shadow: 2px 2px 5px rgba(255, 182, 193, 0.69);
         }
-
+.disclaimer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    text-align: center;
+    font-size: 14px;
+    color: red;
+    font-weight: bold;
+    background-color: rgba(255, 255, 255, 0.8); /* 可以加个背景色使文字更加醒目 */
+    padding: 10px 0;
+    z-index: 1000;
+}
         /* 按钮样式 */
         button {
             padding: 12px 24px;
@@ -173,13 +185,16 @@
         <h1>TXT文本分割工具 - 版本 2.0 🐾</h1>
 
         <div class="input-group">
-            <input type="file" id="fileInput" accept=".txt">
+            <input type="file" id="fileInput" accept=".txt" onchange="validateFileType()">
             <button id="splitBtn">分割文件 🐱</button>
         </div>
 
         <div class="file-list" id="fileList"></div>
 
         <!-- 壁纸选择框 -->
+        <div class="disclaimer">
+    <p>⚠️ 上传文件的责任全权由上传者负责，禁止上传违反中华人民共和国法律的文件包括但不限于淫秽，黄色小说，本站以及管理者不负任何责任包括但不限于法律责任!</p>
+</div>
         <div>
             <label for="wallpaperSelect"> 🐱:</label>
             <select id="wallpaperSelect">
@@ -221,11 +236,20 @@
         }
 
         initSettings();
-
+function validateFileType() {
+    const fileInput = document.getElementById("fileInput");
+    if (fileInput.files.length > 0) {
+        const fileName = fileInput.files[0].name;
+        if (!fileName.endsWith(".txt")) {
+            alert("喵~ 只能上传 TXT 文件哦！");
+            fileInput.value = ""; // 清空文件选择
+        }
+    }
+}
         document.getElementById("splitBtn").addEventListener("click", function() {
             const fileInput = document.getElementById("fileInput");
             if (!fileInput.files.length) {
-                alert("喵~ 请先选择一个文件哦！有小彩蛋");
+                alert("喵~ 请先选择一个文件哦！");
                 return;
             }
 
