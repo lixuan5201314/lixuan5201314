@@ -1,0 +1,46 @@
+/* 基础布局 */
+body {
+    font-family: Arial, sans-serif;
+    margin-top: 100px;
+    text-align: center;
+    color: #000;
+    background-image: 
+        linear-gradient(rgba(244, 244, 244, 0.8), rgba(244, 244, 244, 0.8)),
+        var(--dynamic-bg, var(--local-bg, url('../assets/images/fallback.jpg')));
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    transition: all 0.3s ease;
+}
+
+/* 夜间模式 */
+body.night-mode {
+    background-image: 
+        linear-gradient(rgba(51, 51, 51, 0.8), rgba(51, 51, 51, 0.8)),
+        var(--dynamic-bg, var(--local-bg, url('../assets/images/fallback.jpg')));
+    color: #fff;
+}
+
+/* 交互元素 */
+button, input[type="file"] {
+    padding: 12px 20px;
+    font-size: 16px;
+    margin: 10px;
+    cursor: pointer;
+    border: 2px solid #4CAF50;
+    border-radius: 5px;
+    background-color: #4CAF50;
+    color: white;
+    min-width: 120px; /* 确保点击区域 */
+}
+
+.file-list a {
+    color: #4CAF50;
+    display: block;
+    margin: 10px;
+}
+
+/* 弹窗样式（保持原有） */
+#disclaimer-modal {
+    /* 原有模态框样式 */
+}
