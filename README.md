@@ -128,3 +128,11 @@ TXT文件分割工具不会收集用户的个人信息或文件内容。所有�
 
 此版本的更新不仅提升了界面美观性，也增强了功能的灵活性和用户体验，致力于让用户操作更直观便捷。如果有任何问题或建议，欢迎提出！
 
+<a href="https://astrobox.online/open?source=res&res=资源名称&provider=official" target="_blank" rel="noopener noreferrer">
+  <img src="https://astrobox.online/goab/en/white.svg">
+</a>
+
+紧跟大脚步
+<a href="https://astrobox.online/open?source=res&res=资源名称&provider=official" target="_blank" rel="noopener noreferrer">
+  <img src="https://astrobox.online/goab/zhcn/gray.svg">
+</a>
